@@ -1,0 +1,16 @@
+# requirements-minimal.txt
+# DOAR dependencies ESENȚIALE pentru proiectul PDF-to-Embedding
+# Instalare: pip install -r config/requirements-minimal.txt
+
+# Core dependencies (în ordine de instalare)
+PyMuPDF>=1.23.0
+sentence-transformers>=2.2.2
+supabase>=2.0.0
+tqdm>=4.65.0
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# Data processing (numpy vine cu sentence-transformers, dar explicit e mai bine)
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0
+scipy>=1.10.0
