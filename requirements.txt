@@ -1,0 +1,21 @@
+# requirements.txt - Dependencies pentru Kaggle Notebook
+# Install în Kaggle: !pip install -r requirements.txt
+
+# PDF Processing
+PyMuPDF>=1.23.0
+
+# OCR (Optional - poate fi disabled în config)
+paddleocr>=2.7.0
+
+# Embeddings
+sentence-transformers>=2.2.2
+
+# Database
+supabase>=2.0.0
+
+# Utilities
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+tqdm>=4.65.0
+pyyaml>=6.0
