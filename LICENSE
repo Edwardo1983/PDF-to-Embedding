@@ -1,6 +1,8 @@
 MIT License
 
-Copyright (c) 2024 Eduard (Edd) - Automation Engineer
+Copyright (c) 2024 Eduard (Edd)
+
+This project was developed with AI assistance (Claude Code by Anthropic).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +21,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+NOTE: This codebase was created with extensive AI assistance (Claude Code).
+The human contributor (Eduard) orchestrated the development, defined requirements,
+and validated outputs. This represents a collaboration between human intent
+and AI capability.
