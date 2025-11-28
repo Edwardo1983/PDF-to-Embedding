@@ -1,378 +1,643 @@
-# 📚 PDF-to-Embedding: Conversie Manuale Școlare → AI Embeddings
+# 📚 PDF-to-Embedding Pipeline
 
-Proiect complet pentru procesare a 15GB manuale didactice PDF (clasele 0-4) și convertire în vector embeddings pentru sistem de tutoriat AI educațional.
+> **[🇷🇴 Română](#readme-română) | [🇬🇧 English](#readme-english)**
+
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Kaggle](https://img.shields.io/badge/Kaggle-GPU%20P100-20BEFF?logo=kaggle)](https://www.kaggle.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-pgvector-3ECF8E?logo=supabase)](https://supabase.com/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+**Transform 15GB of educational PDF manuals into 400k-600k semantic vector embeddings for AI-powered tutoring systems.**
+
+Complete pipeline for processing PDFs → Text Extraction → OCR → Chunking → Embeddings → Vector Database (Supabase pgvector), ready for Retrieval-Augmented Generation (RAG) applications.
 
 ---
 
-## 🎯 Overview
+## 🌍 Language / Limbă
 
-### Ce face proiectul?
+<details open>
+<summary><b>🇷🇴 Citește în Română (Click to expand)</b></summary>
 
-**Transformă 15GB de PDF-uri şcolare în ~400k-600k vector embeddings gata pentru căutare semantică în AI.**
+# README Română
 
-- 📄 **Input:** 15GB PDF-uri (60% text + 40% imagini educaționale)
-- ⚙️ **Procesare:** Extract text, OCR imagini, chunking inteligent, generare embeddings
-- 💾 **Output:** Vectori permanenți în Supabase pgvector (500MB free tier)
-- 🗑️ **Result:** Recover 15GB local după upload
+## 📖 Despre Proiect
 
-### Stack Tehnologic
+**PDF-to-Embedding** este un pipeline complet și gratuit pentru transformarea documentelor PDF educaționale în embeddings semantice, gata pentru sisteme AI de tutoriat.
 
-| Componență | Tool | De ce? |
-|---|---|---|
-| **PDF Parsing** | [PyMuPDF](https://pymupdf.readthedocs.io/) | 10x mai rapid decât PyPDF2, extract text + imagini |
-| **OCR pentru Imagini** | [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) | Gratuit, suportă română, funcționează pe CPU |
-| **Embeddings** | [sentence-transformers](https://www.sbert.net/) | Suportă multilingual, model 768-dimensional |
-| **Vector DB** | [Supabase pgvector](https://supabase.com/docs/guides/ai/vecs-python-client) | 500MB permanent free, HNSW indexing |
-| **GPU Gratuit** | [Kaggle P100](https://www.kaggle.com/settings/account) | 30h/săptămână, suficient pentru 15GB |
-| **Notebook** | Jupyter | Executare pas-cu-pas cu progress tracking |
+### 🎯 Ce Face?
 
-### ⏱️ Estimări
+Transformă **15GB de manuale școlare PDF** (clasele 0-4) în **~400k-600k vectori semantici** stocați permanent în Supabase pgvector, ready pentru:
+- ✅ Sisteme RAG (Retrieval-Augmented Generation)
+- ✅ Căutare semantică în documente
+- ✅ Chatbots educaționali inteligenti
+- ✅ Recomandări de conținut personalizate
 
-| Task | Durată | Note |
-|---|---|---|
-| Setup Kaggle + Supabase | 15 min | One-time, copy-paste |
-| Upload PDFs (15GB) | 1-2 h | Depinde de conexiune internet |
-| PDF Extraction + OCR | 12-18 h | On Kaggle P100 GPU |
-| Embedding Generation | 4-6 h | Batch processing 128 chunks/step |
-| Upload Supabase + Index | 2-3 h | Batch 10k vectors, HNSW creation |
-| **TOTAL** | **20-25 h** | Rulează overnight, ~$0 |
+### 💡 De Ce Acest Proiect?
 
-### 💰 Cost Final
+**Problema:** AI tutors necesită acces rapid la informații din manuale, dar LLM-urile au context limit.
+**Soluția:** Convertim tot conținutul în embeddings → căutare semantică ultra-rapidă → feed relevant context to LLM.
+
+**Cost:** **$0** (Kaggle GPU free + Supabase free tier)
+**Timp:** ~24 ore procesare (overnight, automat)
+**Rezultat:** Vector database permanent, 500MB, query latency ~50-100ms
+
+---
+
+## 🎓 Nivel de Competență Necesar
+
+### Skill Level: **Beginner-Friendly** ⭐⭐☆☆☆
+
+**Nu trebuie să fii expert!** Proiectul e construit pentru **automation engineers** și **începători în Python**.
+
+| Skill | Nivel Necesar | Note |
+|-------|---------------|------|
+| **Python** | Începător | Copy-paste cod, rulare comenzi simple |
+| **Git/GitHub** | Opțional | Doar pentru contribuții (nu e necesar) |
+| **SQL** | Zero | SQL-ul e gata scris, doar copy-paste |
+| **Machine Learning** | Zero | Modelele pre-trained sunt folosite automat |
+| **Cloud Services** | Începător | Ghid pas-cu-pas pentru Kaggle + Supabase |
+
+### 🤖 **Recomandare: Folosește AI Assistants!**
+
+**Acest proiect a fost construit CU și PENTRU AI assistance.**
+
+✅ **Claude Code** (recomandat) - pentru debugging, explicații cod
+✅ **ChatGPT** - pentru întrebări generale
+✅ **GitHub Copilot** - pentru completări cod (opțional)
+
+**Exemplu workflow cu Claude Code:**
+```
+Tu: "Am eroarea X la instalare"
+Claude Code: [Analizează eroarea, dă soluție pas-cu-pas]
+
+Tu: "Explică ce face funcția extract_text_and_images"
+Claude Code: [Explicație detaliată în română + exemple]
+
+Tu: "Cum modific chunk_size să fie 300 în loc de 500?"
+Claude Code: [Arată exact ce să editezi în config.yaml]
+```
+
+**Dacă te blochezi:** Pune întrebarea unui AI assistant. **E 100% OK!**
+
+---
+
+## 🏗️ Stack Tehnologic
+
+| Componentă | Tool | De Ce? | Alternativă |
+|-----------|------|--------|-------------|
+| **PDF Parsing** | [PyMuPDF](https://pymupdf.readthedocs.io/) | 10x mai rapid decât PyPDF2 | PyPDF2, pdfplumber |
+| **OCR** | [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) | Gratuit, română support, CPU-friendly | Tesseract, Google Vision API |
+| **Embeddings** | [sentence-transformers](https://www.sbert.net/) | Multilingual, 768-dim, proven accuracy | OpenAI Embeddings ($$$) |
+| **Vector DB** | [Supabase pgvector](https://supabase.com/docs/guides/ai) | 500MB permanent free, HNSW indexing | Pinecone, Weaviate, Qdrant |
+| **GPU** | [Kaggle P100](https://www.kaggle.com/) | 30h/săptămână gratuit | Google Colab (12h/zi) |
+| **Notebook** | Jupyter | Executare vizuală pas-cu-pas | Python scripts |
+
+---
+
+## ⏱️ Timeline Estimat
+
+| Etapă | Durată | Când | Automatizat? |
+|-------|--------|------|--------------|
+| **Setup conturi** | 15 min | Acum | ❌ Manual |
+| **Upload PDFs** | 1-2 ore | Overnight | ✅ Da |
+| **Procesare Kaggle** | 18-24 ore | Overnight | ✅ Da |
+| **Create Index** | 30-60 min | După procesare | ✅ Da |
+| **TOTAL** | ~26 ore | 2-3 zile | 95% automat |
+
+💡 **Timp efectiv petrecut de tine:** ~30 minute (setup + monitoring)
+
+---
+
+## 💰 Cost Breakdown
 
 ```
-Kaggle P100 GPU:        $0  (30h/săpt gratuit)
-Supabase pgvector:      $0  (500MB permanent free)
-Bandwidth:              $0  (dacă upload local PDFs)
----
-TOTAL:                  $0-3 (eventual VPN dacă necesar)
+┌─────────────────────────────────────────────┐
+│ TOTAL COST: $0                              │
+├─────────────────────────────────────────────┤
+│ Kaggle P100 GPU (30h/week):        $0      │
+│ Supabase pgvector (500MB):         $0      │
+│ sentence-transformers model:       $0      │
+│ PaddleOCR:                         $0      │
+│ Bandwidth (upload 15GB):           $0      │
+└─────────────────────────────────────────────┘
+
+⚡ Comparație:
+- OpenAI Embeddings: ~$60-80 pentru 600k chunks
+- Google Vision OCR: ~$15-30 pentru imagini
+- Pinecone (vector DB): ~$70/month
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SALVEZI: ~$150+ cu acest pipeline gratuit
 ```
 
 ---
 
 ## 📋 Prerequisites
 
-Înainte de a începe, trebuie să ai:
+### 1️⃣ **Conturi Online (Gratuite)**
 
-### 1. **Conturi Online**
-- ✅ Cont Kaggle (signup gratuit: [kaggle.com](https://www.kaggle.com/settings/account))
-- ✅ Cont Supabase (signup gratuit: [supabase.com](https://supabase.com))
-- ✅ Phone verification pe Kaggle (pentru acces GPU)
+| Serviciu | Link Signup | Timp Setup | Phone Needed? |
+|----------|-------------|------------|---------------|
+| **Kaggle** | [kaggle.com/account/login](https://www.kaggle.com/account/login) | 5 min | ✅ Da (pentru GPU) |
+| **Supabase** | [supabase.com](https://supabase.com) | 5 min | ❌ Nu |
+| **GitHub** | [github.com/signup](https://github.com/signup) | 5 min (opțional) | ❌ Nu |
 
-### 2. **Materiale Locale**
-- ✅ Folder `materiale_didactice/` cu 15GB PDF-uri organizate
-- ✅ Structură recomandată: `materiale_didactice/clasa_X/materie/chapters/`
-- ✅ PDFs de test (2-3 fișiere mici pentru testing)
+### 2️⃣ **Software Local**
 
-### 3. **Softare Local**
-```bash
-# Windows (PowerShell sau Command Prompt)
-python --version  # Min Python 3.9
+**Windows 10/11:**
+```powershell
+# Verifică Python
+python --version
+# Expected: Python 3.9.x sau 3.10.x sau 3.11.x
 
-# Dacă nu ai Python, download de la python.org
-# La instalare, selectează: "Add Python to PATH"
+# Dacă nu ai Python:
+# 1. Download: https://www.python.org/downloads/
+# 2. Instalează cu "Add Python to PATH" ✅ bifat
+# 3. Restart PowerShell
 ```
 
-### 4. **Conexiune Internet**
-- 📶 Min 10 Mbps pentru upload PDFs
-- 📡 Stabil (sessionul Kaggle timeout după inactivitate)
+**macOS:**
+```bash
+# Verifică Python
+python3 --version
+
+# Instalare dacă lipsește:
+brew install python@3.10
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+# Verifică Python
+python3 --version
+
+# Instalare dacă lipsește:
+sudo apt update
+sudo apt install python3.10 python3-pip
+```
+
+### 3️⃣ **Materiale PDF (Opțional pentru test)**
+
+- Pentru **test local:** 2-3 PDFs mici (1-5 MB fiecare)
+- Pentru **procesare completă:** 15GB PDFs organizate în `materiale_didactice/`
+
+**Structură recomandată:**
+```
+materiale_didactice/
+├── clasa_0/
+│   ├── matematica/
+│   │   └── capitol_1.pdf
+│   └── romana/
+├── clasa_1/
+...
+```
 
 ---
 
-## 🚀 Quick Start (3 Pași)
+## 🚀 Quick Start (3 Pași Simpli)
 
-### **Pas 1: Preluare Secrets Supabase** (5 min)
+### **Pas 1: Clone Repository** (2 min)
+
 ```bash
-1. Merge la: https://supabase.com/dashboard
-2. Click pe project-ul tău
-3. Settings → API Keys
-4. Copy "Project URL" + "anon public" key
-5. Ține-le în clipboard pentru pasul 4
+# Clone proiect
+git clone https://github.com/Edwardo1983/PDF-to-Embedding.git
+cd PDF-to-Embedding
+
+# Instalează dependencies (poate lua 5-10 min)
+pip install -r config/requirements-minimal.txt
 ```
 
-### **Pas 2: Upload PDFs în Kaggle** (30-60 min)
-```bash
-1. Merge la: https://www.kaggle.com/datasets/create/new
-2. Click "Add data from your computer"
-3. Upload materiale_didactice/ (poate lua timp pentru 15GB)
-4. Set "Visibility" = "Private"
-5. Note dataset ID-ul (format: username/dataset-name)
-```
+### **Pas 2: Setup Supabase** (10 min)
 
-### **Pas 3: Run Notebook Kaggle** (18-24 h)
-```bash
-1. Merge la: https://www.kaggle.com/code/create
-2. Copy-paste codul din kaggle_notebook.ipynb
-3. Add Secrets: SUPABASE_URL, SUPABASE_KEY
-4. Click "Run All" → lasă să proceseze overnight
-5. Verifică Supabase dashboard pentru vectors
-```
+1. **Creează cont:** [supabase.com/dashboard](https://supabase.com/dashboard)
+2. **New Project** → Alege region EU → Așteaptă 2 min
+3. **SQL Editor** → Copy-paste tot din `sql/supabase_setup.sql` → Run
+4. **Settings → API** → Copy:
+   - `Project URL`
+   - `anon public key`
 
-**Gata!** Embeddings-urile tale sunt în Supabase, ready pentru AI tutoring system.
+### **Pas 3: Upload & Process pe Kaggle** (30 min setup + 24h procesare)
+
+1. **Upload PDFs:**
+   - [kaggle.com/datasets/create](https://www.kaggle.com/datasets/create)
+   - Upload folder `materiale_didactice/`
+   - Set **Private**
+
+2. **Create Notebook:**
+   - [kaggle.com/code/create](https://www.kaggle.com/code/create)
+   - Settings → **GPU (P100)** ✅
+   - Settings → Secrets → Add `SUPABASE_URL` și `SUPABASE_ANON_KEY`
+
+3. **Copy-Paste Cod:**
+   - Deschide `kaggle_notebook.ipynb`
+   - Copy tot codul în Kaggle
+   - Click **"Run All"**
+
+4. **Lasă să proceseze overnight** (~24h)
+
+✅ **Gata!** Embeddings-urile tale sunt în Supabase, permanent.
 
 ---
 
-## 📖 Detailed Setup
+## 📚 Documentație Completă
 
-**⚠️ Instrucțiuni pas-cu-pas detaliate aici:** [SETUP_GUIDE.md](SETUP_GUIDE.md)
+| Document | Descriere | Când să-l citești |
+|----------|-----------|-------------------|
+| **[SETUP_GUIDE.md](SETUP_GUIDE.md)** | Pas-cu-pas detaliat Kaggle + Supabase | La început (mandatory) |
+| **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** | Flow tehnic, diagrame, explicații | Pentru înțelegere deep |
+| **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** | 20+ soluții probleme comune | Când întâmpini erori |
 
-Conține:
-- ✅ Screenshot-style walkthroughs (text format)
-- ✅ Troubleshooting pentru common issues
-- ✅ Verificări de configurare
-- ✅ Testing la fiecare pas
+---
+
+## 🧪 Test Local (Opțional, 30 min)
+
+**Înainte de procesare completă, testează cu 2-3 PDFs:**
+
+```bash
+# 1. Adaugă PDFs de test
+copy your-test.pdf materiale_didactice/
+
+# 2. Configurează Supabase (dacă vrei să testezi upload)
+notepad .env
+# Adaugă:
+# SUPABASE_URL=https://xxxxx.supabase.co
+# SUPABASE_ANON_KEY=eyJhbGci...
+
+# 3. Rulează test
+python tests/test_sample.py
+```
+
+**Expected output:**
+```
+✅ TEST 1: PDF EXTRACTION - PASSED
+✅ TEST 2: OCR PROCESSING - PASSED (skipped, OCR disabled)
+✅ TEST 3: TEXT CHUNKING - PASSED
+✅ TEST 4: EMBEDDING GENERATION - PASSED
+✅ TEST 5: SUPABASE CONNECTION - PASSED
+✅ ALL TESTS PASSED!
+```
+
+---
+
+## 🎯 Output Final
+
+După procesare, vei avea:
+
+```
+📊 Supabase Database:
+├─ ~400k-600k vector embeddings
+├─ 768 dimensions (multilingual semantic)
+├─ HNSW index (cosine similarity)
+├─ Query latency: 50-100ms
+├─ Storage: ~300-500 MB
+└─ Status: ✅ Permanent (free tier)
+
+🔍 Capabilities:
+├─ Semantic search: "Cum se calculează aria?"
+├─ Similarity matching: top-K results
+├─ Metadata filtering: by class, subject, chapter
+└─ Ready for RAG integration with LLMs
+```
+
+---
+
+## 🛠️ Cum Folosești Embeddings-urile?
+
+**Exemplu Python (în aplicația ta de tutoriat):**
+
+```python
+from supabase import create_client
+from sentence_transformers import SentenceTransformer
+
+# 1. Connect to Supabase
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# 2. Load embedding model (same as pipeline)
+model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
+
+# 3. User question
+user_query = "Cum se calculează aria unui pătrat?"
+
+# 4. Generate query embedding
+query_embedding = model.encode([user_query])[0].tolist()
+
+# 5. Search similar chunks in Supabase
+results = supabase.rpc('match_documents', {
+    'query_embedding': query_embedding,
+    'match_count': 10,
+    'filter_clasa': 1,  # Optional: filter by class
+    'filter_materie': 'Matematică'  # Optional: filter by subject
+}).execute()
+
+# 6. Use top results as context for LLM
+context = "\n".join([r['text'] for r in results.data[:5]])
+
+# 7. Send to LLM (GPT-4, Claude, etc)
+llm_response = your_llm_function(
+    system="You are an educational tutor.",
+    user_query=user_query,
+    context=context
+)
+
+print(llm_response)
+# Output: "Aria pătratului se calculează înmulțind latura cu ea însăși:
+#          Aria = latura × latura sau latura².
+#          De exemplu, dacă latura = 5cm, atunci Aria = 25cm²"
+```
 
 ---
 
 ## 🏗️ Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    15GB PDF LOCAL                            │
-│           (materiale_didactice/clasa_*/...)                 │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ├─[MANUAL UPLOAD]
-                     ↓
-┌─────────────────────────────────────────────────────────────┐
-│                  KAGGLE DATASET                              │
-│     (Your PDFs mounted as /kaggle/input/dataset/)           │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ├─[KAGGLE NOTEBOOK PROCESSING]
-                     ↓
-┌────────────────────────────────────────────────────────────┐
-│                  PROCESSING PIPELINE                         │
-│  ┌──────────────┐      ┌──────────────┐                   │
-│  │ PyMuPDF      │──→   │ Text Extract │                   │
-│  │ (text/img)   │      │ (1000s)      │                   │
-│  └──────────────┘      └──────┬───────┘                   │
-│                                │                            │
-│                         ┌──────▼───────┐                   │
-│                         │ PaddleOCR    │                   │
-│                         │ (imagini)    │                   │
-│                         └──────┬───────┘                   │
-│                                │                            │
-│                         ┌──────▼────────────┐              │
-│                         │ Chunking + Dedup  │              │
-│                         │ (500 chars + hash)│              │
-│                         └──────┬────────────┘              │
-│                                │                            │
-│                    ┌───────────▼───────────┐              │
-│                    │ sentence-transformers │              │
-│                    │ (768-dim vectors)     │              │
-│                    └───────────┬───────────┘              │
-└────────────────────────┬───────────────────────────────────┘
-                         │
-                         ├─[BATCH UPLOAD 10k]
-                         ↓
-┌─────────────────────────────────────────────────────────────┐
-│                SUPABASE pgvector (500MB)                     │
-│     ┌──────────────────────────────────────────────────┐   │
-│     │ 400k-600k VECTORS (768 dim each)                 │   │
-│     │ + Metadata: source_pdf, page, clasa, materie    │   │
-│     │ + HNSW Index (cosine similarity)                │   │
-│     │ + Match RPC function (similarity search)         │   │
-│     └──────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-                         │
-                    ┌────▼─────┐
-                    │ Your AI   │
-                    │ Tutoring  │
-                    │ System    │
-                    └──────────┘
-```
-
-**Flow Detaliat:**
-1. **Extract Text** (PyMuPDF): Parse PDF → text + metapagină
-2. **OCR Imagini** (PaddleOCR): Recunoștere text din diagrame
-3. **Chunking**: Split text în 500-char chunks cu 50-char overlap
-4. **Deduplication**: Hash MD5 pentru skip headers/footers
-5. **Embeddings**: Batch processing cu sentence-transformers
-6. **Upload Supabase**: 10k vectors per batch cu retry logic
-7. **Indexing**: HNSW creation pentru fast similarity search
-
----
-
-## 📁 Project Structure
-
-```
-pdf-to-embedding/
-├── README.md                          # ← Ești aici
-├── SETUP_GUIDE.md                     # Instrucțiuni detaliate setup
-├── kaggle_notebook.ipynb              # Notebook principal (copy-paste în Kaggle)
-│
-├── scripts/                           # Python modules
-│   ├── pdf_extractor.py              # Extract text + imagini din PDFs
-│   ├── ocr_processor.py              # PaddleOCR pentru imagini
-│   ├── chunking.py                   # Split text inteligent + dedup
-│   ├── embedding_generator.py        # sentence-transformers batched
-│   └── supabase_uploader.py          # Batch upload cu retry
-│
-├── config/
-│   ├── requirements.txt               # Dependencies (pip install)
-│   └── config.yaml                   # Parametri: chunk_size, batch_size, etc
-│
-├── sql/
-│   └── supabase_setup.sql            # Schema pgvector + indexes + RPC
-│
-├── tests/
-│   └── test_sample.py                # E2E test cu 2-3 PDFs mici
-│
-├── docs/
-│   ├── TROUBLESHOOTING.md            # Solutions pentru common issues
-│   └── ARCHITECTURE.md               # Explicație detaliată flow
-│
-└── materiale_didactice/              # ← Upload tine PDFs AICI
-    ├── clasa_0/
-    ├── clasa_1/
-    ├── ...
-    └── clasa_4/
+┌─────────────────────┐
+│   15GB PDFs LOCAL   │
+│  (materiale_did.)   │
+└──────────┬──────────┘
+           │
+           ├─ [UPLOAD]
+           ↓
+┌─────────────────────┐
+│   KAGGLE DATASET    │
+│  (mounted as input) │
+└──────────┬──────────┘
+           │
+           ├─ [PROCESSING PIPELINE]
+           ↓
+    ┌──────────────┐
+    │  PyMuPDF     │  → Extract text + images
+    └──────┬───────┘
+           │
+    ┌──────▼───────┐
+    │  PaddleOCR   │  → OCR text from diagrams
+    └──────┬───────┘
+           │
+    ┌──────▼────────┐
+    │   Chunking    │  → Split into 500-char chunks
+    └──────┬────────┘
+           │
+    ┌──────▼─────────────┐
+    │ sentence-transform │  → Generate 768-dim embeddings
+    └──────┬─────────────┘
+           │
+           ├─ [BATCH UPLOAD 10k]
+           ↓
+┌──────────────────────────┐
+│  SUPABASE pgvector       │
+│  ┌────────────────────┐  │
+│  │ 600k vectors       │  │
+│  │ HNSW index         │  │
+│  │ RPC functions      │  │
+│  └────────────────────┘  │
+└──────────────────────────┘
+           │
+           ├─ [QUERY API]
+           ↓
+┌──────────────────────────┐
+│   YOUR AI TUTOR APP      │
+│   (RAG System)           │
+└──────────────────────────┘
 ```
 
 ---
 
-## 🔍 Verificare Setup
+## 🤝 Contributing
 
-După ce completezi SETUP_GUIDE.md, rulează:
+Contribuțiile sunt binevenite! Dacă îmbunătățești ceva:
 
-```bash
-# 1. Check Python version
-python --version
+1. Fork repository
+2. Create branch: `git checkout -b feature/amazing-feature`
+3. Commit: `git commit -m 'Add amazing feature'`
+4. Push: `git push origin feature/amazing-feature`
+5. Open Pull Request
 
-# 2. Install dependencies
-pip install -r config/requirements.txt
-
-# 3. Run sample test (process 2-3 PDFs mici)
-python tests/test_sample.py
-
-# 4. Expected output:
-# ✅ Processed 3 PDFs
-# ✅ Generated 1,250 embeddings
-# ✅ Uploaded to Supabase: 1,250/1,250
-# ✅ Sample query test passed
-```
+**Ideas for contributions:**
+- ✅ Support pentru alte limbi (spaniolă, franceză, etc)
+- ✅ Improved OCR quality detection
+- ✅ Web UI pentru monitoring procesare
+- ✅ Docker containerization
+- ✅ Traduceri README în alte limbi
 
 ---
 
 ## 🐛 Troubleshooting
 
 **Problem:** "GPU not available" în Kaggle
-**Solution:** [SETUP_GUIDE.md → Pas 1.3 Phone verification](SETUP_GUIDE.md#pas-13-phone-verification)
+**Solution:** [TROUBLESHOOTING.md#gpu-not-available](docs/TROUBLESHOOTING.md#gpu-not-available)
 
-**Problem:** "Out of memory" la processing
-**Solution:** [TROUBLESHOOTING.md → Kaggle Memory Issues](docs/TROUBLESHOOTING.md#out-of-memory-la-processing)
+**Problem:** "Out of memory"
+**Solution:** [TROUBLESHOOTING.md#out-of-memory](docs/TROUBLESHOOTING.md#out-of-memory)
 
 **Problem:** "Supabase connection timeout"
-**Solution:** [TROUBLESHOOTING.md → Supabase Connection](docs/TROUBLESHOOTING.md#connection-timeout-la-supabase)
+**Solution:** [TROUBLESHOOTING.md#supabase-connection](docs/TROUBLESHOOTING.md#supabase-connection)
 
-**⚠️ Mai multe soluții:** [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
-
----
-
-## 📊 Estimări de Output
-
-După procesare completă (~24 ore):
-
-```
-INPUT:
-- 15GB PDFs
-- ~3000-5000 fișiere
-- ~800k-1M pagini
-
-PROCESSING STATS:
-- Text extraction rate: ~500 PDFs/ora (GPU accelerated)
-- OCR images: ~1000 imagini/ora
-- Embeddings generation: ~50k vectors/ora
-- Upload to Supabase: ~10k vectors/min (batched)
-
-OUTPUT:
-- Total chunks: 400k-600k
-- Vector dimensions: 768 (multilingual)
-- Database size: ~300-500 MB (compressed vectors)
-- Storage remaining: ~200MB free Supabase tier
-- Query latency: ~50-100ms (HNSW index)
-
-✅ READY FOR: AI tutoring system, semantic search, similarity recommendations
-```
+📖 **[View All Solutions →](docs/TROUBLESHOOTING.md)**
 
 ---
 
-## 📝 Cum să folosești embeddings-urile
+## 📞 Support & Community
 
-Odată ce embeddings-urile sunt în Supabase, aplicația ta de tutoriat AI poate face:
-
-```python
-from supabase import create_client
-
-# 1. Initialize client
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# 2. Generate query embedding
-from sentence_transformers import SentenceTransformer
-model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
-query_embedding = model.encode("Cum se calculează aria unui pătrat?")
-
-# 3. Find similar chunks
-results = supabase.rpc('match_documents', {
-    'query_embedding': query_embedding.tolist(),
-    'match_count': 10,
-    'filter_clasa': 1,  # Clasa 1
-    'filter_materie': 'Matematică'
-}).execute()
-
-# 4. Use results for AI context
-for result in results.data:
-    print(f"Text: {result['text']}")
-    print(f"Similarity: {result['similarity']:.2%}")
-    print(f"Source: {result['metadata']['source_pdf']}")
-```
-
----
-
-## 🎓 Educational Use
-
-Acest proiect demonstrează:
-- ✅ Pipeline-uri ETL cu Python
-- ✅ Processing PDF-uri la scară (15GB+)
-- ✅ OCR și NLP cu librării open-source
-- ✅ Vector databases și similarity search
-- ✅ Kaggle compute resources
-- ✅ Batch processing și optimization
-
-Perfect pentru portfolio DevOps/ML Engineering!
-
----
-
-## 📞 Support
-
-**Probleme tehnice?** Verifică:
-1. [SETUP_GUIDE.md](SETUP_GUIDE.md) - Pas-cu-pas complet
-2. [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - 20+ soluții
-3. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Flow detaliat
-
-**Vrei să contribui?**
-Fork repository-ul și submit pull requests!
+- 💬 **GitHub Issues:** [Report bugs](https://github.com/Edwardo1983/PDF-to-Embedding/issues)
+- 📧 **Email:** (Add your email dacă vrei)
+- 🤖 **AI Assistance:** Use Claude Code, ChatGPT pentru debugging
 
 ---
 
 ## 📜 License
 
-MIT - Free to use, modify, distribute
+MIT License - Free to use, modify, distribute.
+
+See [LICENSE](LICENSE) for details.
 
 ---
 
-## 🚀 Next Steps
+## 🙏 Credits
 
-✅ **Următor:** [SETUP_GUIDE.md](SETUP_GUIDE.md)
-Then: Configure Kaggle + Supabase
-Then: Copy-paste notebook
-Then: Run overnight
-Then: ✨ Embeddings ready!
+**Built with:**
+- [PyMuPDF](https://github.com/pymupdf/PyMuPDF) - PDF processing
+- [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) - OCR
+- [sentence-transformers](https://github.com/UKPLab/sentence-transformers) - Embeddings
+- [Supabase](https://supabase.com/) - Vector database
+- [Kaggle](https://www.kaggle.com/) - Free GPU compute
+
+**Created by:** Edd - Automation Engineer
+**AI Assisted:** Claude Code (Anthropic)
+
+---
+
+## ⭐ Star History
+
+If this project helped you, consider giving it a ⭐!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Edwardo1983/PDF-to-Embedding&type=Date)](https://star-history.com/#Edwardo1983/PDF-to-Embedding&Date)
 
 ---
 
-**Creat pentru:** Edd - Automation Engineer
-**Scop:** AI Educational Tutoring System (15GB manuale 0-4)
-**Status:** Ready for production use
+</details>
 
 ---
+
+<details>
+<summary><b>🇬🇧 Read in English (Click to expand)</b></summary>
+
+# README English
+
+## 📖 About
+
+**PDF-to-Embedding** is a complete, free pipeline for transforming educational PDF documents into semantic embeddings, ready for AI tutoring systems.
+
+### 🎯 What It Does
+
+Transforms **15GB of educational PDF manuals** (grades 0-4) into **~400k-600k semantic vectors** permanently stored in Supabase pgvector, ready for:
+- ✅ RAG (Retrieval-Augmented Generation) systems
+- ✅ Semantic document search
+- ✅ Intelligent educational chatbots
+- ✅ Personalized content recommendations
+
+### 💡 Why This Project?
+
+**Problem:** AI tutors need quick access to manual information, but LLMs have context limits.
+**Solution:** Convert all content into embeddings → ultra-fast semantic search → feed relevant context to LLM.
+
+**Cost:** **$0** (Kaggle free GPU + Supabase free tier)
+**Time:** ~24 hours processing (overnight, automated)
+**Result:** Permanent vector database, 500MB, query latency ~50-100ms
+
+---
+
+## 🎓 Required Skill Level
+
+### Skill Level: **Beginner-Friendly** ⭐⭐☆☆☆
+
+**You don't need to be an expert!** This project is built for **automation engineers** and **Python beginners**.
+
+| Skill | Required Level | Notes |
+|-------|---------------|-------|
+| **Python** | Beginner | Copy-paste code, run simple commands |
+| **Git/GitHub** | Optional | Only for contributions (not required) |
+| **SQL** | Zero | SQL is pre-written, just copy-paste |
+| **Machine Learning** | Zero | Pre-trained models used automatically |
+| **Cloud Services** | Beginner | Step-by-step guide for Kaggle + Supabase |
+
+### 🤖 **Recommendation: Use AI Assistants!**
+
+**This project was built WITH and FOR AI assistance.**
+
+✅ **Claude Code** (recommended) - for debugging, code explanations
+✅ **ChatGPT** - for general questions
+✅ **GitHub Copilot** - for code completions (optional)
+
+**Example workflow with Claude Code:**
+```
+You: "I'm getting error X during installation"
+Claude Code: [Analyzes error, provides step-by-step solution]
+
+You: "Explain what the extract_text_and_images function does"
+Claude Code: [Detailed explanation with examples]
+
+You: "How do I change chunk_size to 300 instead of 500?"
+Claude Code: [Shows exactly what to edit in config.yaml]
+```
+
+**If you get stuck:** Ask an AI assistant. **It's 100% OK!**
+
+---
+
+## 🏗️ Tech Stack
+
+| Component | Tool | Why? | Alternative |
+|-----------|------|------|-------------|
+| **PDF Parsing** | [PyMuPDF](https://pymupdf.readthedocs.io/) | 10x faster than PyPDF2 | PyPDF2, pdfplumber |
+| **OCR** | [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) | Free, multilingual, CPU-friendly | Tesseract, Google Vision API |
+| **Embeddings** | [sentence-transformers](https://www.sbert.net/) | Multilingual, 768-dim, proven accuracy | OpenAI Embeddings ($$$) |
+| **Vector DB** | [Supabase pgvector](https://supabase.com/docs/guides/ai) | 500MB permanent free, HNSW indexing | Pinecone, Weaviate, Qdrant |
+| **GPU** | [Kaggle P100](https://www.kaggle.com/) | 30h/week free | Google Colab (12h/day) |
+| **Notebook** | Jupyter | Visual step-by-step execution | Python scripts |
+
+---
+
+## 🚀 Quick Start
+
+### **Step 1: Clone Repository** (2 min)
+
+```bash
+git clone https://github.com/Edwardo1983/PDF-to-Embedding.git
+cd PDF-to-Embedding
+pip install -r config/requirements-minimal.txt
+```
+
+### **Step 2: Setup Supabase** (10 min)
+
+1. Create account: [supabase.com](https://supabase.com)
+2. New Project → EU region → Wait 2 min
+3. SQL Editor → Copy-paste from `sql/supabase_setup.sql` → Run
+4. Settings → API → Copy URL + anon key
+
+### **Step 3: Process on Kaggle** (30 min setup + 24h processing)
+
+1. Upload PDFs to [Kaggle Datasets](https://www.kaggle.com/datasets/create)
+2. Create [Kaggle Notebook](https://www.kaggle.com/code/create)
+3. Enable **GPU (P100)**
+4. Add Secrets: `SUPABASE_URL`, `SUPABASE_ANON_KEY`
+5. Copy-paste code from `kaggle_notebook.ipynb`
+6. Click **"Run All"**
+7. Let it run overnight (~24h)
+
+✅ **Done!** Your embeddings are in Supabase, permanently.
+
+---
+
+## 📚 Full Documentation
+
+- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Detailed step-by-step setup
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Technical flow, diagrams
+- **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - 20+ solutions to common issues
+
+---
+
+## 📊 Expected Output
+
+After processing:
+
+- **~400k-600k vector embeddings** (768 dimensions)
+- **HNSW index** for fast similarity search
+- **Query latency:** 50-100ms
+- **Storage:** ~300-500 MB (permanent free tier)
+- **Ready for RAG** with any LLM
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! See issues or open a PR.
+
+---
+
+## 📜 License
+
+MIT License - Free to use, modify, distribute.
+
+---
+
+## 🙏 Credits
+
+Built with PyMuPDF, PaddleOCR, sentence-transformers, Supabase, Kaggle.
+**Created by:** Edd - Automation Engineer
+**AI Assisted:** Claude Code (Anthropic)
+
+---
+
+</details>
+
+---
+
+## 🌟 Support This Project
+
+If this helped you, please ⭐ **star this repository**!
+
+**Questions?** Open an [issue](https://github.com/Edwardo1983/PDF-to-Embedding/issues) or ask Claude Code!
+
+---
+
+**Last Updated:** November 2024
+**Status:** ✅ Production Ready
+**Maintained:** Yes
