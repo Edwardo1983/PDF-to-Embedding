@@ -123,6 +123,7 @@ $RECYCLE.BIN/
 # Test outputs
 test_output/
 sample_results/
+NOTEBOOK.md
 
 # Database dumps
 *.db
@@ -134,5 +135,3 @@ sample_results/
 # ============================================================================
 !.gitignore
 !README.md
-!requirements.txt
-!requirements-minimal.txt
