@@ -123,7 +123,6 @@ $RECYCLE.BIN/
 # Test outputs
 test_output/
 sample_results/
-NOTEBOOK.md
 
 # Database dumps
 *.db
