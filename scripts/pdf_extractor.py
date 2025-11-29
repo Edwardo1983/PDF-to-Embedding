@@ -47,7 +47,7 @@ class PDFExtractionResult:
     error_message: Optional[str] = None
 
 
-def extract_text_and_images(pdf_path: str) -> PDFExtractionResult:
+def extract_text_and_images(pdf_path: str, max_pages: Optional[int] = None) -> PDFExtractionResult:
     """
     Extrage text și imagini dintr-un PDF folosind PyMuPDF.
 
@@ -85,14 +85,15 @@ def extract_text_and_images(pdf_path: str) -> PDFExtractionResult:
         # Colectează informații generale
         file_size_bytes = Path(pdf_path).stat().st_size
         total_pages = len(pdf_document)
+        pages_to_process = total_pages if max_pages is None else min(total_pages, max_pages)
 
-        logger.info(f"Proceeding PDF: {Path(pdf_path).name} ({total_pages} pages, {file_size_bytes / 1024 / 1024:.1f}MB)")
+        logger.info(f"Proceeding PDF: {Path(pdf_path).name} ({pages_to_process}/{total_pages} pages, {file_size_bytes / 1024 / 1024:.1f}MB)")
 
         # Extrage text din toate paginile
         all_text = []
         images_found = []
 
-        for page_number in range(total_pages):
+        for page_number in range(pages_to_process):
             try:
                 page = pdf_document[page_number]
 
@@ -160,7 +161,7 @@ def extract_text_and_images(pdf_path: str) -> PDFExtractionResult:
             pdf_path=pdf_path,
             text=combined_text,
             images=images_found,
-            total_pages=total_pages,
+            total_pages=pages_to_process,
             file_size_bytes=file_size_bytes,
             extraction_status="success"
         )
