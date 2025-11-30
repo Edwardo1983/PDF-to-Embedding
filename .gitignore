@@ -89,6 +89,8 @@ materiale_didactice/
 !materiale_didactice/.gitkeep
 materiale_didactice.zip
 *.zip
+NOTEBOOK.ipynb
+NOTEBOOK.md
 
 # ============================================================================
 # Model Cache (sentence-transformers, PaddleOCR)
